@@ -23,7 +23,7 @@ class ChinaDisplayControllerSerial:
                to
             3 : most debug text
 	
-	Some commands are not always implmented on the panel (E.G GET_SERIAL, 1,2,..,0)
+	Some commands are not always implmented on the panel (E.G GET_SERIAL, Power_ON, number keys)
 	
 	Trademarks belong to their respective companies
 	
@@ -40,7 +40,7 @@ class ChinaDisplayControllerSerial:
 	
     __BAD_TEST_KEYS = ['POWER_OFF']
     CodeTable={
-			# Information found form various sources on Internet
+			# Information found from various sources (mostly Internet searches)
             "AverMedia":{ 
                 #CodeTable 0 (AverMedia)
                 'POWER_ON':'69 53 43',
