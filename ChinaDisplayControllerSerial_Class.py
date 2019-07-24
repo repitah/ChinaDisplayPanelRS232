@@ -237,6 +237,10 @@ class ChinaDisplayControllerSerial:
         return list3 
     
     def testVersion (self):
+	""" 
+	@note Broken
+	@Todo change the way CodeTable is handled
+	"""
         common_keys = self.__intersection( self.CodeTable[0] , self.CodeTable[1])
         common_key_commands = []
         for key in common_keys:
@@ -259,9 +263,9 @@ class ChinaDisplayControllerSerial:
             print("Testing table %s key:" %delta_key[0], delta_key[1], "\tRETURNED:",self.sendhex(keyhex))
         print ("Test common keys")
     def showTables (self):
-        print (CodeTable.count)
+        print (CodeTable.keys())
     def showTables ():
-        print (CodeTable.count)        
+        print (CodeTable.keys())        
 #ENDCLASS
 
 #display = ChinaDisplayControllerSerial ("/dev/ttyUSB0", display_type='KTC', debugText=2)
