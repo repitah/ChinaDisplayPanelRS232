@@ -1,8 +1,6 @@
 # ChinaDisplayPanelRS232
-Serial interface for China based panels with RS232
-
+Serial interface for China sourced panels with RS232 (with Android "brain")
 Runs with Python 3
-
 For command line interface, please use Interactive_display_serial.py
 
-Tested against some Mecer LED Interactive screens, with Android "brain"
+Tested against some Mecer LED Interactive screens
