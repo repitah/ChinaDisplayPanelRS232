@@ -5,14 +5,14 @@ from time import sleep
 
 class ChinaDisplayControllerSerial:
     """Class to communicate with certain/several displays / large format panels with an Android controller.
-    
+
     The Android controllers consume raw bytes and returns:
         Null/None (no commumincation), OKOK or NGNG.
-    Be aware that returns that are not Null/None, OKOK or NGNG 
+    Be aware that returns that are not Null/None, OKOK or NGNG
         may mean the controller is still booting.
-    
+
     Attributes:
-        comm_port : str 
+        comm_port : str
             port/device connected to display (RS232 comm port)
         comm_speed : int : default = 38400
             port baudrate
@@ -22,26 +22,26 @@ class ChinaDisplayControllerSerial:
             0 : no debug text
                to
             3 : most debug text
-	
+
 	Some commands are not always implmented on the panel (E.G GET_SERIAL, Power_ON, number keys)
-	
+
 	Trademarks belong to their respective companies
-	
+
 	@author Simon Francklin
 	@license MIT
 	@status Alpha
 	@version 0.1
 	@date 2019/07/24
-	
+
 	@Note Tabs are used.
-	
+
 	@change v0.1 : Release to wild. Basic testing done.
     """
-	
+
     __BAD_TEST_KEYS = ['POWER_OFF']
     CodeTable={
 			# Information found from various sources (mostly Internet searches)
-            "AverMedia":{ 
+            "AverMedia":{
                 #CodeTable 0 (AverMedia)
                 'POWER_ON':'69 53 43',
                 'POWER_OFF':'69 76 20',
@@ -107,12 +107,12 @@ class ChinaDisplayControllerSerial:
                 'SCREENSIZE':'79 13 73',
                 'PICTUREMODE':'79 14 72',
                 'SOUNDMODE':'79 15 71',
-                'SLEEPTIMER':'79 16 70',        
+                'SLEEPTIMER':'79 16 70',
                 'BLANK':'79 45 41',
                 'GET_POWERSTATUS':'79 33 53',
                 'GET_POWERSAVEMODE':'79 30 56',
                 'GET_DISPLAYSERIALNUMBER':'79 26 60',
-                #Table V3? HoverCam KTC 
+                #Table V3? HoverCam KTC
                 'GET_MUTE':'79 44 42',
                 'GET_VOLUME':'79 43 43',
                 'GET_OPSINSTALLED':'79 31 55',
@@ -143,9 +143,9 @@ class ChinaDisplayControllerSerial:
             _tempvar=[ct for ct in self.CodeTable.keys() if ct == display_type]
             print("Tables:",_tempvar)
         self.useCodeTable = [ct for ct in self.CodeTable.keys() if ct == display_type][0]
-        
+
         self.serialcomm = serial.Serial()
-        
+
         self.serialcomm.port = comm_port
         self.serialcomm.baudrate = comm_speed
         self.serialcomm.bytesize = serial.EIGHTBITS
@@ -158,7 +158,7 @@ class ChinaDisplayControllerSerial:
         self.serialcomm.timeout = 0.1
         #self.serialcomm.readTimeout = 0.1
         #self.serialcomm.timeout = None
-            
+
         try:
             if ( self.debugText >= 1):
                 print ("Starting access to ", comm_port)
@@ -172,9 +172,9 @@ class ChinaDisplayControllerSerial:
     def sendhex (self, hexstr : str):
         """
             Sends a hex codes as bytes to the display
-            
+
             Attributes:
-            key : str 
+            key : str
                 Key to send (MUST BE PART OF CODE TABLE)
         """
         serialreturn = ""
@@ -185,24 +185,24 @@ class ChinaDisplayControllerSerial:
                 self.serialcomm.open()
             self.serialcomm.flushInput()
             self.serialcomm.flushOutput()
-        
+
             self.serialcomm.write(bytes.fromhex(hexstr))
             sleep(0.5)
             #self.serialcomm.write(b'\r')
             numberOfLines = 0
-    		
-            
+
+
             while True:
                 thisread = self.serialcomm.read(10)
                 if (self.debugText >= 2):
                     print(thisread)
-                serialreturn = serialreturn + thisread.decode('UTF8') 
-                    
+                serialreturn = serialreturn + thisread.decode('UTF8')
+
                 numberOfLines += 1
                 if (numberOfLines > 3):
                     break
                 #sleep(0.05)
-                    
+
                 if (self.debugText >= 3 ):
                     print("Written...")
 
@@ -211,36 +211,36 @@ class ChinaDisplayControllerSerial:
             print ("Exception occured: \n%s\n" %str(exception))
             #else:
             #S    print ("Cannot open %s", self.serialcomm.serial)
-            
+
         return serialreturn
 
     def sendKey(self, key : str):
         """
             Sends a keypress to the display
-            
+
             Attributes:
-            key : str 
+            key : str
                 Key to send (MUST BE PART OF CODE TABLE)
         """
         if (self.debugText > 1):
             print("Using CodeTable: ", self.useCodeTable)
-            print(self.CodeTable[self.useCodeTable])    
+            print(self.CodeTable[self.useCodeTable])
             print("Key: ",key)
-        
+
         keyhex = (self.CodeTable[self.useCodeTable]).get(key)
         if (keyhex is None):
             raise Exception("Invalid key to send")
         print("RETURNED:",self.sendhex(keyhex))
-    
-    def __intersection(self, list1, list2): 
-        list3 = [value for value in list1 if value in list2] 
-        return list3 
-    
-    def testVersion (self):
-	""" 
-	@note Broken
-	@Todo change the way CodeTable is handled
-	"""
+
+    def __intersection(self, list1, list2):
+        list3 = [value for value in list1 if value in list2]
+        return list3
+
+    def testTableType (self):
+        """
+        @note Broken
+        @Todo change the way CodeTable is handled
+        """
         common_keys = self.__intersection( self.CodeTable[0] , self.CodeTable[1])
         common_key_commands = []
         for key in common_keys:
@@ -253,11 +253,11 @@ class ChinaDisplayControllerSerial:
             for key in self.CodeTable[table]:
                 if not(key in common_keys):
                     delta_keys.append([table,key])
-        
+
         print ("Common keys:",common_keys,'\n')
         print ("Common key commands: ", common_key_commands,'\n')
         print ("Delta of keys:",delta_keys)
-        
+
         for delta_key in delta_keys:
             keyhex = self.CodeTable[delta_key[0]][delta_key[1]]
             print("Testing table %s key:" %delta_key[0], delta_key[1], "\tRETURNED:",self.sendhex(keyhex))
@@ -265,7 +265,7 @@ class ChinaDisplayControllerSerial:
     def showTables (self):
         print (CodeTable.keys())
     def showTables ():
-        print (CodeTable.keys())        
+        print (CodeTable.keys())
 #ENDCLASS
 
 #display = ChinaDisplayControllerSerial ("/dev/ttyUSB0", display_type='KTC', debugText=2)

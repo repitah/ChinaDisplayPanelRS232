@@ -49,6 +49,13 @@ parser_showkeys.add_argument('--table','-t',
                             )
 
 parser_sendkey = subparsers.add_parser('sendkey')
+parser_sendkey.add_argument('--verbose','-v',
+                            action='store',
+                            metavar='LEVEL',
+                            default=0,
+                            type=int,
+                            help=": How verbose to debug"
+                           )
 parser_sendkey.add_argument('--port','-p',
                              required=True,
                              type=str,
@@ -60,13 +67,6 @@ parser_sendkey.add_argument('--speed','-s',
                             type=int,
                             default=38400,
                             help=": Baud rate"
-                           )
-parser_sendkey.add_argument('--verbose','-v',
-                            action='store',
-                            metavar='LEVEL',
-                            default=0,
-                            type=int,
-                            help=": How verbose to debug"
                            )
 parser_sendkey.add_argument('--table','-t',
                              required=True,
